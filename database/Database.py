@@ -47,8 +47,8 @@ class Database(object):  # Класс, отвечающий за работу с
             img = cv2.imread(file)
             rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             encoding = ImageUtils.getCv2Encoding(rgb_img)
-            encoding = json.dumps(encoding.tolist())
             if encoding is None:
+                encoding = json.dumps(encoding.tolist())
                 return False
             query = f"""
                 INSERT INTO faces (name, encoding) VALUES ('{name}', '{encoding}')
