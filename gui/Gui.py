@@ -1,7 +1,12 @@
+import os
+import shutil
+
 import PySimpleGUI as sg
 
+import Config
 from database.Database import Database
 from face.FaceRec import FaceRec
+from utils import Log
 from utils.FaceRecUtil import take_screenshot_from_video
 
 
@@ -28,14 +33,21 @@ class Gui(object):
             elif event == 'Загрузить':
                 file = sg.popup_get_file('Пожалуйста, загрузите ваше изображение с лицом, где оно хорошо видно (анфас)',
                                          title='Изображение с лицом')
+                print("file:" + file)
                 if file:
                     name = sg.popup_get_text(
                         'Введите название лица (будет отображаться на камере при обнаружении данного лица)',
                         title='Название лица')
                     if name:
-                        db = Database()
-                        db.saveFaceEncoding(file, name)
-                        db.close()
+                        if Config.work_type == 1:
+                            db = Database()
+                            db.saveFaceEncoding(file, name)
+                            db.close()
+                        elif Config.work_type == 0:
+                            shutil.copyfile(open(file.replace("file:", ""), "w+").read(), f"{Config.directory}/{name}.jpg") # Жесткий костыль, но работает
+                        else:
+                            Log.error("Неверный тип работы программы в конфиге")
+                            return
                     sg.popup_cancel('Отменено - Вы отменили ввод названия изображения лица')
                 else:
                     sg.popup_cancel('Отменено - Вы отменили загрузку изображения')
